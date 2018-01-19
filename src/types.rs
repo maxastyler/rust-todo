@@ -1,17 +1,19 @@
 //! Types for the todo file parsing
 
 /// Struct that holds time information, hours and optional minutes
+#[derive(Debug, PartialEq)]
 pub struct Time {
-    hours: u8,
-    minutes: Option<u8>,
+    pub hours: u8,
+    pub minutes: u8,
 }
 
 /// Struct that holds date and time information
-pub struct Datetime {
-    year: u32,
-    month: u8,
-    day: u8,
-    time: Option<Time>,
+#[derive(Debug, PartialEq)]
+pub struct DateTime {
+    pub year: u32,
+    pub month: u8,
+    pub day: u8,
+    pub time: Option<Time>,
 }
 
 impl Time {

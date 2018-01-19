@@ -1,0 +1,16 @@
+Grammar for the todo file:
+
+todofile -> __ todo_list __
+
+item -> [--]* (
+	 	todo
+		| note)
+
+todo_list -> empty
+	| item todo_list
+
+note -> text (optional ::time) ;;
+todo ->  ([]|[ ]|[x]) note
+
+Text can contain tags, starting with # then a word, or in brackets #() for multiple words
+
