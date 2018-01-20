@@ -36,6 +36,17 @@ impl Time {
     }
 }
 
+impl DateTime {
+    pub fn new(y: u32, mo: u8, d: u8, h: u8, m: u8) -> DateTime {
+        DateTime {
+            year: y,
+            month: mo,
+            day: d,
+            time: Some(Time{ hours: h, minutes: m }),
+        }
+    }
+}
+
 impl Item {
     pub fn new_default() -> Item {
         Item {
@@ -46,4 +57,5 @@ impl Item {
             children: vec!(),
         }
     }
+
 }

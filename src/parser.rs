@@ -54,12 +54,21 @@ named!(pub item_body<String>, map_res!(map_res!(rest, from_utf8), FromStr::from_
 ///  alkwjdhalkfjhoisfh poishpogposugmpoeirug pwoeiug pwoireugpoiusf
 named!(pub parse_item<Item>, do_parse!(
         todo: opt!(ws!(todo_box)) >>
-        text: item_head >>
+        text: ws!(item_head) >>
+        time: opt!(complete!(ws!(delimited!(tag!(":"), get_datetime ,tag!(":"))))) >>
+        description: map!(opt!(complete!(ws!(item_body))), |c| {
+            if c==Some(String::new()) { None } else { c }
+        }) >>
         (Item{
             todo: todo, 
             text: text,
-            time: None,
-            description: None,
+            time: time,
+            description: description,
             children: vec!(),
         })
         ));
+
+/// Count the number of double dashes (--) there are
+named!(pub count_dash<usize>, do_parse!(
+        dash_count: many1!(complete!(tag!("--"))) >>
+        (dash_count.len())));

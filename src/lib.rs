@@ -52,18 +52,33 @@ mod tests {
     }
 
     #[test]
-    fn parse_item_correctly() {
+    fn parse_minimal_correctly() {
         use types::Item;
-        use nom::rest;
-        named!(test_p<u32>, alt_complete!(value!(2, tag!("")) | value!(3, rest)));
-        println!("{:?}", test_p(b"3"));
-        assert_eq!(parser::parse_item(b"Hello there ;;"), Done(&b""[..], 
+        assert_eq!(parser::parse_item(b";;"), Done(&b""[..], 
                                                    Item{
-                                                       todo: Some(true), 
+                                                       todo: None, 
                                                        text: String::new(),
                                                        time: None,
                                                        description: None,
                                                        children: vec!(),
                                                    }));
+    }
+    #[test]
+    fn parse_maximal_correctly() {
+        use types::{DateTime, Time, Item};
+        assert_eq!(parser::parse_item(b"[x] Do washing up;;:2019/12/13T1230:\nPunydonky"), Done(&b""[..], 
+                                                   Item{
+                                                       todo: Some(true), 
+                                                       text: String::from("Do washing up"),
+                                                       time: Some(DateTime::new(
+                                                               2019, 12, 13, 12, 30)),
+                                                       description: Some(String::from("Punydonky")),
+                                                       children: vec!(),
+                                                   }));
+    }
+
+    #[test]
+    fn parse_dashes() {
+        assert_eq!(parser::count_dash(b"-------a--"), Done(&b"-a--"[..], 3));
     }
 }
