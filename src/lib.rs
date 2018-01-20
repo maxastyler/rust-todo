@@ -6,7 +6,14 @@ extern crate nom;
 pub mod types;
 pub mod parser;
 
-use types::DateTime;
+use types::{DateTime, Item};
+use parser::{read_lines_and_parse};
+use std::rc::Rc;
+use std::cell::RefCell;
+
+pub fn structure_todo(mut v: Vec<(usize, Item)>) -> Vec<Rc<RefCell<Item>>> { 
+    vec!(Rc::from(RefCell::new(v[0].1.clone()))) 
+}
 
 #[cfg(test)]
 mod tests {
@@ -127,5 +134,11 @@ mod tests {
         use types::Item;
         let lines = b"--;;\n----;;";
         assert_eq!(parser::read_lines_and_parse(lines), Done(&b""[..], vec!((1, Item::new_default()), (2, Item::new_default()))));
+    }
+
+    #[test]
+    fn test_import() {
+        let included = include_bytes!("test_todo");
+        assert_eq!(parser::read_lines_and_parse(included), Done(&b""[..], vec!()));
     }
 }

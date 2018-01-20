@@ -4,14 +4,14 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 /// Struct that holds time information, hours and optional minutes
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Time {
     pub hours: u8,
     pub minutes: u8,
 }
 
 /// Struct that holds date and time information
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct DateTime {
     pub year: u32,
     pub month: u8,
@@ -20,7 +20,7 @@ pub struct DateTime {
 }
 
 /// Struct containing a todo item
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Item {
     pub todo: Option<bool>,
     pub text: String,
