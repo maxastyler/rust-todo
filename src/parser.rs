@@ -72,3 +72,26 @@ named!(pub parse_item<Item>, do_parse!(
 named!(pub count_dash<usize>, do_parse!(
         dash_count: many1!(complete!(tag!("--"))) >>
         (dash_count.len())));
+
+/// Matches with a set of dashes and a line
+named!(pub match_line<(usize, &[u8] ) >, do_parse!(
+        indentation: count_dash >>
+        text: alt_complete!(take_until!("\n--") | rest) >>
+        opt!(complete!(tag!("\n"))) >>
+        (indentation, text)
+        ));
+
+/// Match a set of lines and return a vector of tuples containing the indentation and the text
+named!(pub match_lines<Vec<(usize, &[u8])> >, alt_complete!(many1!(match_line) | value!(vec!(), ws!(eof!()))));
+
+/// Function to convert a tuple (usize, &[u8]) into an Option<(usize, Item)>
+pub fn convert_item_tup(ini_tup: (usize, &[u8])) -> Option<(usize, Item)> {
+    use nom::IResult::Done;
+    let item_byte_str = ini_tup.1;
+    match parse_item(item_byte_str) {
+        Done(_, item) => Some((ini_tup.0, item)),
+        _ => None,
+    }
+}
+
+// Match a set of lines and parse each line, returning a vector of tuples with (indentation, Item)

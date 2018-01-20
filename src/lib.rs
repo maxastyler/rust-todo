@@ -11,7 +11,7 @@ use types::DateTime;
 #[cfg(test)]
 mod tests {
     use nom::IResult::{Done, Error};
-    use nom::ErrorKind::{Digit, Tag};
+    use nom::ErrorKind::{Digit, Tag, Many1, Alt};
     use parser;
 
     #[test]
@@ -80,5 +80,26 @@ mod tests {
     #[test]
     fn parse_dashes() {
         assert_eq!(parser::count_dash(b"-------a--"), Done(&b"-a--"[..], 3));
+        assert_eq!(parser::count_dash(b"a--"), Error(Many1));
+    }
+
+    #[test]
+    fn parse_dashes_and_line() {
+        assert_eq!(parser::match_line(b"-- testing this line"), Done(&b""[..], (1, &b" testing this line"[..])));
+        assert_eq!(parser::match_line(b"-- testing this line\n--"), Done(&b"--"[..], (1, &b" testing this line"[..])));
+    }
+
+    #[test]
+    fn parse_item_tup() {
+        use types::Item;
+        assert_eq!(parser::convert_item_tup((2, b";;")), Some((2, Item::new_default())));
+        assert_eq!(parser::convert_item_tup((2, b"")), None);
+    }
+
+    #[test]
+    fn parse_lines() {
+        assert_eq!(parser::match_lines(b"-- testing this line\n---test line 2"), Done(&b""[..], vec!((1, &b" testing this line"[..]), (1, &b"-test line 2"[..]))));
+        assert_eq!(parser::match_lines(b"testing this line\n---test line 2"), Error(Alt));
+        assert_eq!(parser::match_lines(b"    "), Done(&b""[..], vec!()));
     }
 }
