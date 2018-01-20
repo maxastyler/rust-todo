@@ -102,4 +102,30 @@ mod tests {
         assert_eq!(parser::match_lines(b"testing this line\n---test line 2"), Error(Alt));
         assert_eq!(parser::match_lines(b"    "), Done(&b""[..], vec!()));
     }
+
+    #[test]
+    fn convert_vector_items() {
+        use types::Item;
+        let items = vec!(
+            (2, &b";;"[..]),
+            (3, &b";;"[..]),
+            );
+        let items_wrong = vec!(
+            (2, &b";"[..]),
+            (3, &b""[..]),
+            );
+        let converted = vec!(
+            (2, Item::new_default()),
+            (3, Item::new_default()),
+            );
+        assert_eq!(parser::convert_vec_items(items), converted);
+        assert_eq!(parser::convert_vec_items(items_wrong), vec!());
+    }
+    
+    #[test]
+    fn parse_and_convert_lines() {
+        use types::Item;
+        let lines = b"--;;\n----;;";
+        assert_eq!(parser::read_lines_and_parse(lines), Done(&b""[..], vec!((1, Item::new_default()), (2, Item::new_default()))));
+    }
 }

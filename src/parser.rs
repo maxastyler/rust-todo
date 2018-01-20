@@ -94,4 +94,12 @@ pub fn convert_item_tup(ini_tup: (usize, &[u8])) -> Option<(usize, Item)> {
     }
 }
 
-// Match a set of lines and parse each line, returning a vector of tuples with (indentation, Item)
+/// Convert a vector of line tuples, keeping the ones that parse correctly
+pub fn convert_vec_items(v: Vec<(usize, &[u8])>) -> Vec<(usize, Item)> {
+    let mut parsed_v: Vec<(usize, Item)> = vec!(); 
+    v.iter().for_each(|x| match convert_item_tup(*x) { Some(i) => parsed_v.push(i), _ => ()}) ;
+    parsed_v
+}
+
+/// Match a set of lines and parse each line, returning a vector of tuples with (indentation, Item)
+named!(pub read_lines_and_parse<Vec<(usize, Item)> >, map!(match_lines, convert_vec_items));
